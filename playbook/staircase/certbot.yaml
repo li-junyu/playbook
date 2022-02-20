@@ -1,0 +1,48 @@
+---
+- name: "Install certbot and SSL/HTTPS certificates"
+  hosts:  "{{ target }}"
+  become: yes
+
+  tasks:
+    - name: Install snapd by apt-get
+      ansible.builtin.apt:
+        name: snapd
+        state: present
+        update_cache: yes
+
+    - name: Install snap core by snap
+      community.general.snap: 
+        name: core
+        state: present
+    
+    - name: Install certbot by snap
+      community.general.snap: 
+        name: cerbot
+        state: present
+        classic: yes
+    
+    - name: Install certbot-dns-dnspod plugin for certbot
+      ansible.builtin.pip:
+        name: certbot-dns-plugins==0.0.1
+    
+    - name: Create DNSPOD API token's config file
+      ansible.builtin.template:
+        src:  templates/dnspod.ini
+        dst:  /root/dnspod.ini
+        onwer: root
+        mode: 0400
+    
+    - name: Certonly SSL/HTTPS certificates
+      ansible.builtin.command:
+        argv:
+          - certbot
+          - certonly 
+          - -a certbot-dns-dnspod:dns-dnspod 
+          - --certbot-dns-dnspod:dns-dnspod-credentials /root/dnspod.ini 
+          - -d "{{ certificate_domains | join('-d ') }}"
+        creates: "/etc/letsencrypt/live/{{ domain | default() }}"
+
+    - name: Delete DNSPOD API token's config file
+      ansible.builtin.file:
+        path: /root/dnspod.ini
+        state: absent

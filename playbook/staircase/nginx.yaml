@@ -1,0 +1,55 @@
+---
+
+# Install nginx and configure http/https virtual servers.
+
+- name: "Install nginx and configure HTTP/HTTPS servers"
+  hosts:  "{{ target }}"
+  become: yes
+
+  
+  tasks:
+    - name: Install Nginx (nginx-full)
+      ansible.builtin.apt:
+        name: nginx-full
+        state: present
+    
+    - name: Configure Nginx for proxy server
+      when: machine_type == "proxy"
+      ansible.builtin.template:
+        src: "{{ item.src }}"
+        dst: "{{ item.dst }}"
+        onwer: root
+        group: root
+        mode: u=rw,g=r,o=r
+      loop:
+        - {src: "templates/proxy.nginx.main.conf", dst: "/etc/nginx/nginx.conf"}
+        - {src: "templates/proxy.nginx.http.conf", dst: "/etc/nginx/sites-enabled/default"}
+      vars: 
+        ssl_certificate_path: "/etc/letsencrypt/live/{{ domain | default() }}/fullchain.pem"
+        ssl_certificate_key_path: "/etc/letsencrypt/live/{{ domain | default() }}/privkey.pem"
+      notify:
+        - Restart Nginx
+
+
+    - name: Configure Nginx for relay server
+      when: machine_type == "relay"
+      ansible.builtin.template:
+        src: "{{ item.src }}"
+        dst: "{{ item.dst }}"
+        onwer: root
+        group: root
+        mode: u=rw,g=r,o=r
+      loop:
+        - {src: "templates/relay.nginx.main.conf", dst: "/etc/nginx/nginx.conf"}
+        - {src: "templates/relay.nginx.http.conf", dst: "/etc/nginx/sites-enabled/default"}
+      vars:
+        relay_preread_domain_name: "{{ relay_preread_domain_name | defalt() }}"
+        proxy_backend_domain_list: "{{ proxy_backend_domain_list | default() }}"
+      notify:
+        - Restart Nginx
+
+  handlers:
+    - name: Restart Nginx
+      ansible.builtin.service:
+        name: nginx
+        state: started
