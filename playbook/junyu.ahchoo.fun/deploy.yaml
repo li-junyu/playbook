@@ -1,0 +1,15 @@
+---
+# Deploy static files to junyu.ahchoo.fun remote server.
+
+- name: Copy all files to remote server
+  hosts: "{{ target }}"
+  become: yes
+  
+  tasks:
+    - name: copying files
+      copy:
+        src: "{{src}}"
+        dest: /var/www/
+        owner: ubuntu
+        group: ubuntu
+        mode: 0444
