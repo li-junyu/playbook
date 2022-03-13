@@ -1,0 +1,17 @@
+---
+
+- name: Install dev basic tools
+  hosts: localhost
+  connection: local
+  become: yes
+
+  tasks:
+    - name: Install vim
+      ansible.builtin.apt:
+        name: vim
+        state: present
+
+    - name: Install build-essential
+      ansible.builtin.apt:
+        name: build-essential
+        state: present

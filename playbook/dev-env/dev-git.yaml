@@ -1,0 +1,48 @@
+---
+
+- name: Install git and setup global configuration
+  hosts: localhost
+  connection: local
+
+  tasks:
+    - name: Install git
+      become: yes
+      ansible.builtin.apt:
+        name: git
+        state: present
+
+    - name: Install connect-proxy
+      become: yes
+      ansible.builtin.apt:
+        name: connect-proxy
+
+    - name: Setup user.name
+      community.general.git_config:
+        name: user.name
+        scope: global
+        value: Junyu Li
+
+    - name: Setup user.email
+      community.general.git_config:
+        name: user.email
+        scope: global
+        value: junyu-li@outlook.com
+
+    - name: Setup core.editor
+      community.general.git_config:
+        name: core.editor
+        scope: global
+        value: vim
+
+    # https://stackoverflow.com/questions/58245255/how-to-force-git-to-use-socks-proxy-over-its-ssh-connection
+    - name: Setup core.sshCommand
+      community.general.git_config:
+        name: core.sshCommand
+        scope: global
+        value: ssh -o ProxyCommand="connect -S 127.0.0.1:1080 %h %p"
+
+    - name: Setup http.proxy
+      community.general.git_config:
+        name: http.proxy
+        scope: global
+        value: socks5h://127.0.0.1:1080

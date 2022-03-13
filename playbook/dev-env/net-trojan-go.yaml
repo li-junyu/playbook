@@ -1,0 +1,4 @@
+---
+- name: Install trojan-go then setup global proxy tools
+  hosts: localhost
+  connection: local
