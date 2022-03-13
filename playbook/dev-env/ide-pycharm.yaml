@@ -1,0 +1,11 @@
+# https://github.com/henriklynggaard/ansible-role-pycharm
+
+---
+
+- name: Install pycharm community edition
+  hosts: localhost
+  connection: local
+
+  tasks:
+    - name: Download pycharm community edition
+    - name: Install pycharm community edition

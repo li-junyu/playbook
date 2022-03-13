@@ -1,0 +1,17 @@
+# https://github.com/mhalano/ansible-role-visual-studio-code/blob/master/tasks/main.yml
+# DEB 32-bit: https://go.microsoft.com/fwlink/?LinkID=760680
+# DEB 64-bit: https://go.microsoft.com/fwlink/?LinkID=760868
+# RPM 32-bit: https://go.microsoft.com/fwlink/?LinkID=760681
+# RPM 64-bit: https://go.microsoft.com/fwlink/?LinkID=760867
+
+---
+- name: Install visual studio code
+  hosts: localhost
+  connection: local
+  
+  tasks:
+    - name: Download and install visual studio code
+      become: yes
+      apt:
+        deb: https://go.microsoft.com/fwlink/?LinkID=760868
+      when: ansible_userspace_architecture == 'x86_64' and (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')

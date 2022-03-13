@@ -1,3 +1,5 @@
+# Proxy config: https://stackoverflow.com/questions/58245255/how-to-force-git-to-use-socks-proxy-over-its-ssh-connection
+
 ---
 
 - name: Install git and setup global configuration
@@ -34,7 +36,6 @@
         scope: global
         value: vim
 
-    # https://stackoverflow.com/questions/58245255/how-to-force-git-to-use-socks-proxy-over-its-ssh-connection
     - name: Setup core.sshCommand
       community.general.git_config:
         name: core.sshCommand
