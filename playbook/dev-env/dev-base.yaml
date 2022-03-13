@@ -1,5 +1,4 @@
 ---
-
 - name: Install dev basic tools
   hosts: localhost
   connection: local

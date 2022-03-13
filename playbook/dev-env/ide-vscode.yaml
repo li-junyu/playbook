@@ -8,7 +8,7 @@
 - name: Install visual studio code
   hosts: localhost
   connection: local
-  
+
   tasks:
     - name: Download and install visual studio code
       become: yes
